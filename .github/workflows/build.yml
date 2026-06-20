@@ -1,0 +1,59 @@
+name: Build IPA No Scene
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile
+      run: |
+        clang++ -arch arm64 \
+          -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+          -framework UIKit \
+          -framework Foundation \
+          -mios-version-min=12.0 \
+          -o aimlock \
+          aimlock.mm
+    - name: Check binary
+      run: ls -la aimlock
+    - name: Create IPA
+      run: |
+        mkdir -p Payload/aimlock.app
+        cp aimlock Payload/aimlock.app/
+        cat > Payload/aimlock.app/Info.plist << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+        <key>CFBundleExecutable</key>
+        <string>aimlock</string>
+        <key>CFBundleIdentifier</key>
+        <string>com.aimlock.ios</string>
+        <key>CFBundleName</key>
+        <string>Aimlock</string>
+        <key>CFBundleVersion</key>
+        <string>1</string>
+        <key>CFBundleShortVersionString</key>
+        <string>1.0</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>LSRequiresIPhoneOS</key>
+        <true/>
+        <key>UIStatusBarHidden</key>
+        <true/>
+        <key>UIViewControllerBasedStatusBarAppearance</key>
+        <false/>
+        </dict>
+        </plist>
+        EOF
+    - name: Package
+      run: |
+        cd Payload
+        zip -r ../aimlock.ipa .
+        cd ..
+    - name: Check IPA
+      run: ls -la aimlock.ipa
+    - uses: actions/upload-artifact@v4
+      with:
+        name: aimlock-ipa
+        path: aimlock.ipa
