@@ -68,10 +68,13 @@
                 size_t count = size / sizeof(struct kinfo_proc);
                 for (size_t i = 0; i < count; i++) {
                     NSString *name = [NSString stringWithUTF8String:procList[i].kp_proc.p_comm];
-                                        if ([name localizedCaseInsensitiveContainsString:@"freefire"] ||
-                        [name localizedCaseInsensitiveContainsString:@"freefiremax"] ||
-                        [name localizedCaseInsensitiveContainsString:@"com.garena.game.freefire"] ||
-                        [name localizedCaseInsensitiveContainsString:@"ff"]) {
+                                                           NSString *lowerName = [name lowercaseString];
+                    if ([lowerName containsString:@"freefire"] ||
+                        [lowerName containsString:@"free fire"] ||
+                        [lowerName containsString:@"garena"] ||
+                        [lowerName containsString:@"com.dts.freefire"] ||
+                        [lowerName containsString:@"ffmax"] ||
+                        [lowerName containsString:@"ffm"]) { {
                         break;
                     }
                 }
