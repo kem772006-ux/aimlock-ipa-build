@@ -15,18 +15,26 @@
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view.backgroundColor = [UIColor blackColor];
     
-    UILabel *l = [[UILabel alloc] initWithFrame:CGRectMake(20, 100, ws.coordinateSpace.bounds.size.width-40, 400)];
-    l.text = @"AIMLOCK\n\nDang tim game...\n\n1. Mo game\n2. Vao tran\n3. Home -> App nay\n4. Quay game";
+    // Label HIEN NGAY
+    UILabel *l = [[UILabel alloc] init];
+    l.frame = CGRectMake(20, 120, ws.coordinateSpace.bounds.size.width-40, 500);
+    l.text = @"🎯 AIMLOCK\n\nTrang thai: Dang tim game...\n\n⚠️ Hay mo GAME truoc\nroi moi mo app nay!\n\nHo tro: PUBG, CODM, Free Fire";
     l.textColor = [UIColor orangeColor];
     l.textAlignment = NSTextAlignmentCenter;
-    l.numberOfLines = 10;
-    l.font = [UIFont boldSystemFontOfSize:18];
-    l.tag = 99;
+    l.numberOfLines = 15;
+    l.font = [UIFont boldSystemFontOfSize:16];
     [vc.view addSubview:l];
     
     self.window.rootViewController = vc;
     [self.window makeKeyAndVisible];
     
+    // Delay 1 giay roi tim game
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self timGame:l];
+    });
+}
+
+- (void)timGame:(UILabel *)label {
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         int m[4]={CTL_KERN,KERN_PROC,KERN_PROC_ALL,0};
         size_t z; sysctl(m,4,NULL,&z,NULL,0);
@@ -42,16 +50,17 @@
         free(p);
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            UILabel *lb = [self.window viewWithTag:99];
-            if(g==-1){lb.text=@"❌ KHONG TIM THAY GAME";lb.textColor=[UIColor redColor];}
-            else {
+            if(g==-1){
+                label.text = @"❌ KHONG TIM THAY GAME!\n\nHuong dan:\n1. MO GAME TRUOC\n2. VAO TRAN DAU\n3. HOME -> MO APP NAY\n\nGame ho tro: PUBG, CODM, Free Fire, BGMI";
+                label.textColor = [UIColor redColor];
+            } else {
                 mach_port_t t;
                 if(task_for_pid(mach_task_self(),g,&t)==KERN_SUCCESS){
-                    lb.text=[NSString stringWithFormat:@"✅ OK PID:%d\nQUAY LAI GAME",g];
-                    lb.textColor=[UIColor greenColor];
-                }else{
-                    lb.text=@"❌ CAN TROLLSTORE\nESIGN KHONG DU QUYEN";
-                    lb.textColor=[UIColor redColor];
+                    label.text = [NSString stringWithFormat:@"✅ DA KET NOI GAME!\nPID: %d\nBase: OK\n\nQUAY LAI GAME NGAY!\nAIMLOCK DANG CHAY...", g];
+                    label.textColor = [UIColor greenColor];
+                } else {
+                    label.text = @"❌ THIEU QUYEN TRUY CAP!\n\nESIGN KHONG DU QUYEN.\nCAN TROLLSTORE!\n\nCai TrollStore tu:\njailbreaks.app";
+                    label.textColor = [UIColor redColor];
                 }
             }
         });
