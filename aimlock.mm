@@ -68,12 +68,10 @@
                 size_t count = size / sizeof(struct kinfo_proc);
                 for (size_t i = 0; i < count; i++) {
                     NSString *name = [NSString stringWithUTF8String:procList[i].kp_proc.p_comm];
-                    if ([name localizedCaseInsensitiveContainsString:@"PUBGM"] ||
-                        [name localizedCaseInsensitiveContainsString:@"ShadowTrackerExtra"] ||
-                        [name localizedCaseInsensitiveContainsString:@"codm"] ||
-                        [name localizedCaseInsensitiveContainsString:@"freefire"] ||
-                        [name localizedCaseInsensitiveContainsString:@"bgmi"]) {
-                        foundPid = procList[i].kp_proc.p_pid;
+                                        if ([name localizedCaseInsensitiveContainsString:@"freefire"] ||
+                        [name localizedCaseInsensitiveContainsString:@"freefiremax"] ||
+                        [name localizedCaseInsensitiveContainsString:@"com.garena.game.freefire"] ||
+                        [name localizedCaseInsensitiveContainsString:@"ff"]) {
                         break;
                     }
                 }
